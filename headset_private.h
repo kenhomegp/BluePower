@@ -53,6 +53,7 @@ DESCRIPTION
 #define Three_Language					/*North America SKU : US+SP+FR*/
 #define CallerIDLedDebugx
 #define RubiTTSTerminate
+#define CallerNumerFilter
 
 #ifdef Rubidium
 #define ActiveRubiASR					/*Voice command:[Redial/Call back/Check Battery]*/
@@ -99,13 +100,15 @@ DESCRIPTION
 #define A2DP_Dock						/*A2DP behavior when docked : Assembla Ticket #68*/
 #define Rubi_VP_MinorChg				/*Minor adjustments in voice prompt functionality : Asembla Ticket #75*/ 
 #define EnablePhysicallyPowerOff			/*Heaset power off*/
-#define BHC612_100_NewHW				/*New HW proposal(option 3)*/
+#define BHC612_100_NewHW				/*Merry proposal(option 3)*/
 #define Full_AVRCPx						/*AVRCP SkipForward/SkipBackward*/
 #define DifferentToneForVolumeButton		/*Implement different tone for volume up and down*/
 #define PSFWVer							/*FW version store in PSKEY_USR8*/
 #define CTIA_Testx						/*CTIA test item : Power cycle reconnection during a call, fix HTC phone minor bug*/
-#define CriticalBatteryPowerOffx
 #define TTSLanguageflag					/*Set flag to indicate the headset is under TTS Language selection mode*/
+#define Test_08_29_2013x
+#define Test_09_04_Batt_low_iox
+#define Test_09_06_StopTTSTimerx
 
 #ifdef BHC612_100_NewHWx
 #define NewChargeMMIx

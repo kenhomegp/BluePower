@@ -33,7 +33,7 @@ DESCRIPTION
 #include <stdlib.h>
 #include <psu.h>
 
-#ifdef DEBUG_STATES
+#ifdef DEBUG_STATESx
 #define SM_DEBUG(x) DEBUG(x)
 
 const char * const gHSStateStrings [ HEADSET_NUM_STATES ] = {
@@ -519,9 +519,16 @@ RETURNS
 void stateManagerEnterIncomingCallEstablishState ( void )
 {
 	if(gTheHeadsetState == headsetConnected)
+	{
 		theHeadset.BHC612_CallEnded = 1;
+	}
 	else
+	{
 		theHeadset.BHC612_CallEnded = 0;
+	}
+
+	SM_DEBUG(("SM: Incoming call , original state = %d\n",gTheHeadsetState));
+	
    
     stateManagerSetState( headsetIncomingCallEstablish );
         

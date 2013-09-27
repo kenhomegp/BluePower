@@ -89,11 +89,16 @@ static void appTempMVoltageHandler(TempMTaskData *tempM, uint16 voltage)
 					TEMPM_DEBUG(("Batt_V = %d\n",BHC612_batt_volt.voltage));
 					*/
 				}
-					
+
+				#ifdef Test_09_04_Batt_low_io
+				if((theHeadset.batt_level >= Battery_ChargeStop) && (stateManagerGetState() != headsetLimbo))
+				#else
 				if(theHeadset.batt_level >= Battery_ChargeStop)
+				#endif
 				{
 					/*PowerGetVoltage(&BHC612_batt_volt);*/
 					/*TEMPM_DEBUG(("Batt_V = %d\n",BHC612_batt_volt.voltage));*/
+					
 
 					#ifdef NewChargeMMI
 					if((PsuGetVregEn() != 0) && (ChargerStatus() == STANDBY))	

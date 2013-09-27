@@ -112,7 +112,7 @@ TaskData task1;
 	#endif
 #endif
 
-#ifdef DEBUG_MAIN
+#ifdef DEBUG_MAINx
 #define MAIN_DEBUG(x) DEBUG(x)
     #define TRUE_OR_FALSE(x)  ((x) ? 'T':'F')   
 #else
@@ -1372,6 +1372,10 @@ static void handleUEMessage  ( Task task, MessageId id, Message message )
 			if((Kalimba_mode == 3) && (ASR_active_model == 0))
 			{
 				RUBI_DEBUG(("###Kalimba : TTS_ASR End!\n"));
+				MyDEBUG(("###Kalimba : TTS_ASR End!\n"));
+				#ifdef Test_09_06_StopTTSTimer
+					 MessageCancelAll(task , EventUnused ) ;
+				#endif
 				AnswerCall_function1();
 				break;
 			}
@@ -1560,9 +1564,26 @@ static void handleUEMessage  ( Task task, MessageId id, Message message )
 		break;
 		#endif
 		case (EventToggleDebugKeys):
+			#ifdef Test_08_29_2013
+			if((Kalimba_mode == 3) && (ASR_active_model == 0))
+			{
+				MyDEBUG(("**Test 08_29_2013\n"));
+				#if 0
+				if(theHeadset.TTS_ASR_Playing)
+				{
+					AudioDisconnect();
+					theHeadset.sco_sink = 0;
+					UnloadRubidiumEngine();
+					theHeadset.TTS_ASR_Playing = false;
+					MyDEBUG(("**Test 08_29_2013\n"));
+				}
+				#endif
+			}
+			#else
 			MAIN_DEBUG(("HS: Toggle Debug Keys\n"));
 			/* If the headset has debug keys enabled then toggle on/off */
 			ConnectionSmSecModeConfig(&theHeadset.task, cl_sm_wae_acl_none, !theHeadset.debug_keys_enabled, TRUE);
+			#endif
 		break;
 		case (EventPowerOn):
             MAIN_DEBUG(("HS: Power On\n" ));
@@ -1947,8 +1968,8 @@ static void handleUEMessage  ( Task task, MessageId id, Message message )
             {
                 lIndicateEvent = FALSE ;
             }
-        break ;  
-        case (EventAnswer):
+        break ;          
+	case (EventAnswer):
            /* printf("@@@ \n"); */
             MAIN_DEBUG(("HS: Answer,state=%d\n",lState)) ;
 			
@@ -1972,42 +1993,57 @@ static void handleUEMessage  ( Task task, MessageId id, Message message )
                    tones */
                 if(stateManagerGetState() != headsetIncomingCallEstablish)
                 {
-					lIndicateEvent = FALSE ;
+			lIndicateEvent = FALSE ;
                 }
-				else
-				{
-					#ifdef Rubi_TTS
-						if(theHeadset.Rubi_enable == 0)
+		  else
+		  {
+				#ifdef Rubi_TTS
+					if(theHeadset.Rubi_enable == 0)
+					{
+						if(theHeadset.PressCallButton == TRUE)
 						{
-							if(theHeadset.PressCallButton == TRUE)
-							{
-								#ifdef RubiTTSTerminate
-								TTSTerminate();
-								MAIN_DEBUG(("***Call TTSTerminate()\n"));
-								
-								/*#ifdef ChineseTTS*/
-								#if 0
-									MessageSend ( task , EventRestoreDefaults , 0) ;
-								#endif
-								
+							#ifdef RubiTTSTerminate
+								#ifdef Test_08_29_2013
+									if(theHeadset.TTS_ASR_Playing){
+										TTSTerminate();
+										MAIN_DEBUG(("***Call TTSTerminate()\n"));
+										MyDEBUG(("***Call TTSTerminate(),%d\n",theHeadset.TTS_ASR_Playing))	;	
+									}
+									else
+									{
+										headsetAnswerOrRejectCall( TRUE );
+										MyDEBUG(("*** Test08_29 , Answer call\n"));
+									}
 								#else
-								AnswerCall_function();
+									TTSTerminate();
+									MAIN_DEBUG(("***Call TTSTerminate()\n"));
+									MyDEBUG(("***Call TTSTerminate(),%d\n",theHeadset.TTS_ASR_Playing))
+									#ifdef Test_09_06_StopTTSTimer
+									if((Kalimba_mode == 3) && (ASR_active_model == 0))
+									{
+										MessageSendLater(&theHeadset.task, EventUnused, 0, 4000);
+									}
+									#endif
 								#endif
-							}
-							else
-							{
-								MAIN_DEBUG(("Answer call , PressCallButton : [T]\n"));
-			                			headsetAnswerOrRejectCall( TRUE );
-								theHeadset.PressCallButton = TRUE;
-							}
+							#else
+								AnswerCall_function();
+							#endif
 						}
 						else
 						{
-							headsetAnswerOrRejectCall( TRUE );
+							MAIN_DEBUG(("Answer call , PressCallButton : [T]\n"));
+							MyDEBUG(("Answer call , PressCallButton : [T],%d\n",theHeadset.TTS_ASR_Playing));
+		                			headsetAnswerOrRejectCall( TRUE );
+							theHeadset.PressCallButton = TRUE;
 						}
-					#else					
+					}
+					else
+					{
 						headsetAnswerOrRejectCall( TRUE );
-					#endif
+					}
+				#else					
+					headsetAnswerOrRejectCall( TRUE );
+				#endif
             	}
             }
 
@@ -2451,6 +2487,10 @@ static void handleUEMessage  ( Task task, MessageId id, Message message )
 				/*if(lState == headsetConnected)Double press call button to check connection...*/
 				if(lState == headsetConnected)/*Double press call button to check connection...*/
 				{
+					#if 0
+					A2dpMediaStartRequest(theHeadset.a2dp_link_data->device_id[0] , theHeadset.a2dp_link_data->stream_id[0]);
+					MAIN_DEBUG(("###Test!!! 2013/9/3\n"));
+					#else
 					if(theHeadset.VoiceRecognitionIsActive == 0)
 					{
 						#ifdef Rubi_VoicePrompt
@@ -2501,6 +2541,7 @@ static void handleUEMessage  ( Task task, MessageId id, Message message )
 				 		}
 						#endif
 					}
+					#endif
 					break;
 				}
 				

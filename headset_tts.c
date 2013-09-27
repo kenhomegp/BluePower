@@ -167,8 +167,12 @@ RETURNS
 
 void TTSPlayNumString(uint16 size_num_string, uint8* num_string)
 {
- int i;  
+	int i;  
 /*#ifdef TEXT_TO_SPEECH_DIGITS*/
+#ifdef CallerNumerFilter
+	int j;
+#endif
+
 #if 0
 
 #ifdef FULL_TEXT_TO_SPEECH
@@ -190,9 +194,23 @@ void TTSPlayNumString(uint16 size_num_string, uint8* num_string)
 	memset(TTS_text, 0, sizeof(TTS_text));	
 
 	TTS_DEBUG(("Rubi > TTSPlayNumString...\n"));
-    for(i=0;i<(int)size_num_string;i++)
-        TTS_text[i]=(char)(num_string[i]);
-    TTS_text[i]=0;
+
+#ifdef CallerNumerFilter
+	j = 0;
+	for(i=0;i<(int)size_num_string;i++)
+	{
+		if(((char)(num_string[i]) >= 0x30) && ((char)(num_string[i]) <= 0x39))
+		{
+			TTS_text[j]=(char)(num_string[i]);
+			j++;
+		}
+	}
+	TTS_text[j]=0;
+#else
+    	for(i=0;i<(int)size_num_string;i++)
+       	TTS_text[i]=(char)(num_string[i]);
+    	TTS_text[i]=0;
+#endif
 
 	#if 0
     AUDIO_BUSY	= NULL;
@@ -276,7 +294,7 @@ bool TTSPlayCallerNumber( const uint16 size_number, const uint8* number )
         return TRUE;
 	}
 /*#endif*/
-          	DEBUG((" skipped.\n"));
+          	TTS_DEBUG((" skipped.\n"));
     return FALSE;
 }
 
@@ -603,7 +621,7 @@ bool TTSPlayCallerName( const uint16 size_name, const uint8* name )
 	}
     #endif    
 #endif   
-   	DEBUG((" skipped.\n"));
+   	TTS_DEBUG((" skipped.\n"));
     return FALSE;
 }
 

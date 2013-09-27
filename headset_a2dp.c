@@ -37,6 +37,10 @@
 #define A2DP_DEBUG(x) 
 #endif
 
+#ifdef DEBUG_A2DPx
+void Debug_A2DP_Status(void);
+#endif
+
 #include <rubidium_text_to_speech_plugin.h> 
 
 
@@ -75,6 +79,21 @@ typedef struct
   FUNCTIONS
 */
 
+#ifdef DEBUG_A2DPx
+void Debug_A2DP_Status(void)
+{
+	uint8 i;
+
+	for_all_a2dp(i)
+    	{
+    		A2DP_DEBUG(("Connect = %d\n",theHeadset.a2dp_link_data->connected[i]));
+		A2DP_DEBUG(("SUS = %d\n",theHeadset.a2dp_link_data->SuspendState[i]));
+		A2DP_DEBUG(("Dev ID = %d\n",theHeadset.a2dp_link_data->device_id[i]));
+		A2DP_DEBUG(("Stream ID = %d\n",theHeadset.a2dp_link_data->stream_id[i]));
+		A2DP_DEBUG(("\n"));
+	}
+}
+#endif
 
 /*************************************************************************
 NAME    
@@ -999,6 +1018,9 @@ void handleA2DPMessage( Task task, MessageId id, Message message )
         
         case A2DP_MEDIA_SUSPEND_IND:
             A2DP_DEBUG(("A2DP_SUSPEND_IND : \n"));
+		#ifdef DEBUG_A2DPx
+		Debug_A2DP_Status();
+		#endif
         	handleA2DPSuspendStreaming(((A2DP_MEDIA_SUSPEND_IND_T*)message)->device_id,
                                        ((A2DP_MEDIA_SUSPEND_IND_T*)message)->stream_id,
                                          a2dp_success);

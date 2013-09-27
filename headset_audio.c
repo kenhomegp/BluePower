@@ -84,8 +84,8 @@
 #define AUD_DEBUG(x) 
 #endif      
 
-#define AUD_DEBUG1(x) DEBUG(x)		/*Debug!!*/
-/*#define AUD_DEBUG1(x)*/
+/*#define AUD_DEBUG1(x) DEBUG(x)		Debug!!*/
+#define AUD_DEBUG1(x)
 
 #ifdef Rubidium
 #include <rubidium_text_to_speech_plugin.h>
